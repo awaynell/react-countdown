@@ -1,8 +1,10 @@
 import React from "react";
+import MyInput from "./MyInput/MyInput";
+import Timer from "./Timer";
+import "./styles/App.css";
 
-export default () => (
-  <>
-    <h1>Welcome to React Vite Micro App!</h1>
-    <p>Hard to get more minimal than this React app.</p>
-  </>
-);
+const App = () => {
+  return <Timer />;
+};
+
+export default App;

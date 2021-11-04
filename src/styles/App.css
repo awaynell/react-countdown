@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.timer {
+  height: 95vh;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  justify-content: center;
+  color: tomato;
+}
+.timer .wrapper {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+.timer .wrapper .myInput {
+  text-align: center;
+  color: tomato;
+  border: none;
+  outline: none;
+  width: 20vw;
+  margin-right: 10px;
+  font-size: 100px;
+}
+.timer fieldset {
+  border: none;
+}
+.timer span {
+  font-size: 25px;
+}
+
+.btn {
+  text-align: center;
+  color: tomato;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+/*# sourceMappingURL=App.css.map */
