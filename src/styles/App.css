@@ -1,3 +1,16 @@
+@keyframes blinking {
+  0% {
+    background-color: rgba(255, 0, 0, 0.123);
+    opacity: 0.6;
+  }
+  50% {
+    background-color: rgba(255, 0, 0, 0.103);
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 * {
   margin: 0;
   padding: 0;
@@ -16,7 +29,7 @@
   text-align: center;
   justify-content: center;
 }
-.timer .wrapper .myInput {
+.timer .wrapper input {
   text-align: center;
   color: tomato;
   border: none;
@@ -24,6 +37,7 @@
   width: 20vw;
   margin-right: 10px;
   font-size: 100px;
+  border-radius: 10px;
 }
 .timer fieldset {
   border: none;
@@ -37,6 +51,15 @@
   color: tomato;
   margin-top: 10px;
   font-size: 20px;
+  cursor: pointer;
+}
+
+.sec .over {
+  font-size: 20px;
+}
+
+.error {
+  animation: blinking 3s;
 }
 
 /*# sourceMappingURL=App.css.map */

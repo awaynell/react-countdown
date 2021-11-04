@@ -1,3 +1,5 @@
+@import "./animation.scss";
+
 * {
   margin: 0;
   padding: 0;
@@ -13,7 +15,7 @@
     display: flex;
     text-align: center;
     justify-content: center;
-    .myInput {
+    input {
       text-align: center;
       color: tomato;
       border: none;
@@ -21,6 +23,7 @@
       width: calc(100vw / 5);
       margin-right: 10px;
       font-size: 100px;
+      border-radius: 10px;
     }
   }
   fieldset {
@@ -36,4 +39,13 @@
   color: tomato;
   margin-top: 10px;
   font-size: 20px;
+  cursor: pointer;
+}
+.sec {
+  .over {
+    font-size: 20px;
+  }
+}
+.error {
+  animation: blinking 3s;
 }

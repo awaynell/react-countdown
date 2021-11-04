@@ -1,0 +1,13 @@
+@keyframes blinking {
+  0% {
+    background-color: rgba(255, 0, 0, 0.123);
+    opacity: 0.6;
+  }
+  50% {
+    background-color: rgba(255, 0, 0, 0.103);
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
