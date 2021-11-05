@@ -37,11 +37,13 @@ const Timer = () => {
         inputHours.current.value = hours;
         inputMin.current.value = min;
         inputSec.current.value = sec;
-        if (value.days === 0 && value.hours === 0 && value.min === 0 && value.sec === 0) {
+        if (currentValue < 500) {
           clearInterval(timer);
-          inputSec.current.readOnly = false;
+          arr.map((el) => {
+            el.current.value = "";
+            el.current.readOnly = false;
+          });
           setRun("Запустить таймер");
-          inputSec.current.value = "";
           setCount({ days: 0, hours: 0, min: 0, sec: 0 });
         }
       }, 1000);
