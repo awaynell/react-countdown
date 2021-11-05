@@ -28,6 +28,14 @@
   display: flex;
   text-align: center;
   justify-content: center;
+  white-space: pre-wrap;
+}
+.timer .wrapper input[type=number]::-webkit-inner-spin-button,
+.timer .wrapper input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 .timer .wrapper input {
   text-align: center;
@@ -54,13 +62,15 @@
   cursor: pointer;
 }
 
-.sec .over {
-  font-size: 20px;
+.sec,
+.min,
+.hours,
+.days {
+  display: flex;
+  flex-direction: column;
 }
 
-.errorInfo {
-  text-align: center;
-  margin-top: 100px;
+.sec .over {
   font-size: 20px;
 }
 

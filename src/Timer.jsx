@@ -4,12 +4,14 @@ import ErrorWindow from "./components/ErrorWindow";
 const Timer = () => {
   const [count, setCount] = useState({ days: 0, hours: 0, min: 0, sec: 0 });
   const [run, setRun] = useState("Запустить таймер");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({ days: false, hours: false, min: false, sec: false });
+  const [errorShow, setErrorShow] = useState(false);
 
-  const useTimer = (value) => {
+  const startTimer = (value) => {
     if (error) {
       console.log("error: ", error);
-      return setError("Введите данные и нажмите повторно");
+      setErrorShow(true);
+      return setError("Введите верные данные и нажмите повторно");
     }
     if (value.sec > 0) {
       setError("");
@@ -19,7 +21,6 @@ const Timer = () => {
         arr.map((el) => {
           el.current.readOnly = true;
         });
-        inputSec.current.readOnly = true;
         value.sec--;
         inputSec.current.value = value.sec;
         if (value.sec === 0) {
@@ -43,10 +44,14 @@ const Timer = () => {
   let arr = [inputDays, inputHours, inputMin, inputSec];
 
   const checkValue = (count) => {
-    if (count.sec > 60) {
-      return setError(true);
+    setError({ days: false, hours: false, min: false, sec: false });
+    if (count.sec > 59 || count.sec < 0) {
+      return setError({ ...error, sec: true });
     }
-    setError(false);
+    if (count.min > 59 || count.min < 0) {
+      return setError({ ...error, min: true });
+    }
+    setErrorShow(false);
   };
 
   useEffect(() => {
@@ -55,9 +60,10 @@ const Timer = () => {
 
   return (
     <>
-      <div className="btn" onClick={() => useTimer(count)}>
+      <div className="btn" onClick={() => startTimer(count)}>
         {run}
       </div>
+      {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
       <div className="timer">
         <div className="wrapper">
           <div className="days">
@@ -68,7 +74,7 @@ const Timer = () => {
                 setCount({ ...count, days: e.target.value });
                 console.log(count);
               }}
-              className={error ? "error" : null}
+              className={error.days ? "error" : null}
             />
             <span>Days</span>
           </div>
@@ -79,7 +85,7 @@ const Timer = () => {
               onChange={(e) => {
                 setCount({ ...count, hours: e.target.value });
               }}
-              className={error ? "error" : null}
+              className={error.hours ? "error" : null}
             />
             <span>Hours</span>
           </div>
@@ -90,23 +96,25 @@ const Timer = () => {
               onChange={(e) => {
                 setCount({ ...count, min: e.target.value });
               }}
-              className={error ? "error" : null}
+              className={error.min ? "error" : null}
             />
+            {error.min ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
             <span>Minutes</span>
           </div>
           <div className="sec">
             <input
+              type={"number"}
               ref={inputSec}
               placeholder="00"
               onChange={(e) => {
                 setCount({ ...count, sec: e.target.value });
               }}
-              className={error ? "error" : null}
+              className={error.sec ? "error" : null}
             />
+            {error.sec ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
             <span>Seconds</span>
           </div>
         </div>
-        <ErrorWindow error={error} />
       </div>
     </>
   );
