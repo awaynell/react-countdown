@@ -6,7 +6,6 @@ const Timer = () => {
   const [run, setRun] = useState("Запустить таймер");
   const [error, setError] = useState({ days: false, hours: false, min: false, sec: false });
   const [errorShow, setErrorShow] = useState(false);
-  const [start, setStart] = useState(false);
 
   const startTimer = (value) => {
     if (
@@ -20,10 +19,9 @@ const Timer = () => {
       setErrorShow(true);
       return setError("Введите верные данные и нажмите повторно");
     }
-    if (value.sec > 0) {
+    if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
       setError("");
       setRun("Таймер запущен");
-      setStart(true);
       let validValue =
         new Date().getTime() + 1000 * 60 * 60 * 24 * value.days + 1000 * 60 * 60 * value.hours + 1000 * 60 * value.min + 1000 * value.sec;
       arr.map((el) => {
@@ -31,19 +29,20 @@ const Timer = () => {
       });
       let timer = setInterval(() => {
         let currentValue = validValue - new Date().getTime();
-        console.log(currentValue);
-        setCount({
-          days: Math.round(currentValue / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          min: Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60)),
-          sec: Math.floor((currentValue % (1000 * 60)) / 1000),
-        });
-        if (value.sec === 0) {
+        let days = Math.floor(currentValue / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let min = Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60));
+        let sec = Math.floor((currentValue % (1000 * 60)) / 1000);
+        inputDays.current.value = days;
+        inputHours.current.value = hours;
+        inputMin.current.value = min;
+        inputSec.current.value = sec;
+        if (value.days === 0 && value.hours === 0 && value.min === 0 && value.sec === 0) {
           clearInterval(timer);
           inputSec.current.readOnly = false;
-          setStart(false);
           setRun("Запустить таймер");
           inputSec.current.value = "";
+          setCount({ days: 0, hours: 0, min: 0, sec: 0 });
         }
       }, 1000);
     } else {
@@ -66,6 +65,9 @@ const Timer = () => {
     }
     if (count.min > 59 || count.min < 0) {
       return setError({ ...error, min: true });
+    }
+    if (count.hours > 24 || count.hours < 0) {
+      return setError({ ...error, hours: true });
     }
     setError({ days: false, hours: false, min: false, sec: false });
   };
@@ -103,6 +105,7 @@ const Timer = () => {
               }}
               className={error.hours ? "error" : null}
             />
+            {error.hours ? <ErrorWindow error={"Промежуток 0 - 24"} /> : null}
             <span>Hours</span>
           </div>
           <div className="min">
