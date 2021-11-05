@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ErrorWindow from "./components/ErrorWindow";
 
 const Timer = () => {
@@ -6,9 +6,16 @@ const Timer = () => {
   const [run, setRun] = useState("Запустить таймер");
   const [error, setError] = useState({ days: false, hours: false, min: false, sec: false });
   const [errorShow, setErrorShow] = useState(false);
+  const [start, setStart] = useState(false);
 
   const startTimer = (value) => {
-    if (error) {
+    if (
+      error.days === true ||
+      error.hours === true ||
+      error.min === true ||
+      error.sec === true ||
+      Object.values(count).reduce((acc, sum) => sum + acc) === 0
+    ) {
       console.log("error: ", error);
       setErrorShow(true);
       return setError("Введите верные данные и нажмите повторно");
@@ -16,16 +23,25 @@ const Timer = () => {
     if (value.sec > 0) {
       setError("");
       setRun("Таймер запущен");
-
+      setStart(true);
+      let validValue =
+        new Date().getTime() + 1000 * 60 * 60 * 24 * value.days + 1000 * 60 * 60 * value.hours + 1000 * 60 * value.min + 1000 * value.sec;
+      arr.map((el) => {
+        el.current.readOnly = true;
+      });
       let timer = setInterval(() => {
-        arr.map((el) => {
-          el.current.readOnly = true;
+        let currentValue = validValue - new Date().getTime();
+        console.log(currentValue);
+        setCount({
+          days: Math.round(currentValue / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          min: Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60)),
+          sec: Math.floor((currentValue % (1000 * 60)) / 1000),
         });
-        value.sec--;
-        inputSec.current.value = value.sec;
         if (value.sec === 0) {
           clearInterval(timer);
           inputSec.current.readOnly = false;
+          setStart(false);
           setRun("Запустить таймер");
           inputSec.current.value = "";
         }
@@ -44,14 +60,14 @@ const Timer = () => {
   let arr = [inputDays, inputHours, inputMin, inputSec];
 
   const checkValue = (count) => {
-    setError({ days: false, hours: false, min: false, sec: false });
+    setErrorShow(false);
     if (count.sec > 59 || count.sec < 0) {
       return setError({ ...error, sec: true });
     }
     if (count.min > 59 || count.min < 0) {
       return setError({ ...error, min: true });
     }
-    setErrorShow(false);
+    setError({ days: false, hours: false, min: false, sec: false });
   };
 
   useEffect(() => {
