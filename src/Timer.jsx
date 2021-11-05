@@ -6,8 +6,13 @@ const Timer = () => {
   const [run, setRun] = useState("Запустить таймер");
   const [error, setError] = useState({ days: false, hours: false, min: false, sec: false });
   const [errorShow, setErrorShow] = useState(false);
+  let inputDays = useRef(null);
+  let inputHours = useRef(null);
+  let inputMin = useRef(null);
+  let inputSec = useRef(null);
 
   const startTimer = (value) => {
+    let arr = [inputDays, inputHours, inputMin, inputSec];
     if (
       error.days === true ||
       error.hours === true ||
@@ -47,18 +52,8 @@ const Timer = () => {
           setCount({ days: 0, hours: 0, min: 0, sec: 0 });
         }
       }, 1000);
-    } else {
-      inputSec.current.value = "";
     }
-    console.log(inputSec.current);
   };
-
-  let inputDays = useRef(null);
-  let inputHours = useRef(null);
-  let inputMin = useRef(null);
-  let inputSec = useRef(null);
-
-  let arr = [inputDays, inputHours, inputMin, inputSec];
 
   const checkValue = (count) => {
     setErrorShow(false);
