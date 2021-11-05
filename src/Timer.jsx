@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
+import ErrorWindow from "./components/ErrorWindow";
 
 const Timer = () => {
   const [count, setCount] = useState({ days: 0, hours: 0, min: 0, sec: 0 });
   const [run, setRun] = useState("Запустить таймер");
   const [error, setError] = useState(false);
-  const [errorInfo, setErrorInfo] = useState("");
 
   const useTimer = (value) => {
     if (error) {
-      console.log(error);
-      return setErrorInfo("Введите данные и нажмите повторно");
+      console.log("error: ", error);
+      return setError("Введите данные и нажмите повторно");
     }
     if (value.sec > 0) {
-      setErrorInfo("");
+      setError("");
       setRun("Таймер запущен");
 
       let timer = setInterval(() => {
@@ -33,12 +33,6 @@ const Timer = () => {
       inputSec.current.value = "";
     }
     console.log(inputSec.current);
-  };
-
-  const checkError = (error) => {
-    if (error) {
-      return <div className="errorInfo">Введите данные правильно</div>;
-    }
   };
 
   let inputDays = useRef(null);
@@ -64,7 +58,6 @@ const Timer = () => {
       <div className="btn" onClick={() => useTimer(count)}>
         {run}
       </div>
-      {checkError(error)}
       <div className="timer">
         <div className="wrapper">
           <div className="days">
@@ -113,6 +106,7 @@ const Timer = () => {
             <span>Seconds</span>
           </div>
         </div>
+        <ErrorWindow error={error} />
       </div>
     </>
   );
