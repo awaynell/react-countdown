@@ -6,6 +6,9 @@ const Timer = () => {
   const [run, setRun] = useState("Запустить таймер");
   const [error, setError] = useState({ days: false, hours: false, min: false, sec: false });
   const [errorShow, setErrorShow] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
+  const [enableBtn, setEnableBtn] = useState(false);
+
   let inputDays = useRef(null);
   let inputHours = useRef(null);
   let inputMin = useRef(null);
@@ -32,27 +35,27 @@ const Timer = () => {
 
   const validValue =
     new Date().getTime() + 1000 * 60 * 60 * 24 * count.days + 1000 * 60 * 60 * count.hours + 1000 * 60 * count.min + 1000 * count.sec;
+  let arr = [inputDays, inputHours, inputMin, inputSec];
 
   const timer = () => {
-    let arr = [inputDays, inputHours, inputMin, inputSec];
+    setEnableBtn(true);
     let currentValue = validValue - new Date().getTime();
     console.log("currentValue: ", currentValue);
-    let days = Math.floor(currentValue / (1000 * 60 * 60 * 24));
-    let hours = Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let min = Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60));
-    let sec = Math.floor((currentValue % (1000 * 60)) / 1000);
+    let days = Math.trunc(currentValue / (1000 * 60 * 60 * 24));
+    let hours = Math.trunc((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let min = Math.trunc((currentValue % (1000 * 60 * 60)) / (1000 * 60));
+    let sec = Math.trunc((currentValue % (1000 * 60)) / 1000);
     inputDays.current.value = days;
     inputHours.current.value = hours;
     inputMin.current.value = min;
     inputSec.current.value = sec;
+    setReadOnly(true);
     let timeout = setTimeout(timer, 1000);
-    if (currentValue < 500) {
-      arr.map((el) => {
-        el.current.value = "";
-        el.current.readOnly = false;
-      });
+    if (currentValue < 1000 && currentValue > 0) {
       clearTimeout(timeout);
+      setEnableBtn(false);
       setRun("Запустить таймер");
+      setReadOnly(false);
       setCount({ days: 0, hours: 0, min: 0, sec: 0 });
     }
   };
@@ -73,18 +76,29 @@ const Timer = () => {
 
   useEffect(() => {
     checkValue(count);
-  }, [count]);
+    if (readOnly) {
+      arr.map((el) => {
+        el.current.readOnly = true;
+      });
+    }
+    if (!readOnly) {
+      arr.map((el) => {
+        el.current.readOnly = false;
+      });
+    }
+  }, [count, readOnly]);
 
   return (
     <>
-      <div
+      <button
+        disabled={enableBtn}
         className="btn"
         onClick={() => {
           startTimer();
         }}
       >
         {run}
-      </div>
+      </button>
       {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
       <div className="timer">
         <div className="wrapper">
