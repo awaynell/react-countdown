@@ -90,6 +90,7 @@ const Timer = () => {
         <div className="wrapper">
           <div className="days">
             <input
+              type={"number"}
               ref={inputDays}
               placeholder="00"
               onChange={(e) => {
@@ -102,6 +103,7 @@ const Timer = () => {
           </div>
           <div className="hours">
             <input
+              type={"number"}
               ref={inputHours}
               placeholder="00"
               onChange={(e) => {
@@ -114,6 +116,7 @@ const Timer = () => {
           </div>
           <div className="min">
             <input
+              type={"number"}
               ref={inputMin}
               placeholder="00"
               onChange={(e) => {
