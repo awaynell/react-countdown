@@ -12,7 +12,6 @@ const Timer = () => {
   let inputSec = useRef(null);
 
   const startTimer = (value) => {
-    let arr = [inputDays, inputHours, inputMin, inputSec];
     if (
       error.days === true ||
       error.hours === true ||
@@ -27,31 +26,34 @@ const Timer = () => {
     if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
       setError("");
       setRun("Таймер запущен");
-      let validValue =
-        new Date().getTime() + 1000 * 60 * 60 * 24 * value.days + 1000 * 60 * 60 * value.hours + 1000 * 60 * value.min + 1000 * value.sec;
+      timer();
+    }
+  };
+
+  const validValue =
+    new Date().getTime() + 1000 * 60 * 60 * 24 * count.days + 1000 * 60 * 60 * count.hours + 1000 * 60 * count.min + 1000 * count.sec;
+
+  const timer = () => {
+    let arr = [inputDays, inputHours, inputMin, inputSec];
+    let currentValue = validValue - new Date().getTime();
+    console.log("currentValue: ", currentValue);
+    let days = Math.floor(currentValue / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let min = Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60));
+    let sec = Math.floor((currentValue % (1000 * 60)) / 1000);
+    inputDays.current.value = days;
+    inputHours.current.value = hours;
+    inputMin.current.value = min;
+    inputSec.current.value = sec;
+    let timeout = setTimeout(timer, 1000);
+    if (currentValue < 500) {
       arr.map((el) => {
-        el.current.readOnly = true;
+        el.current.value = "";
+        el.current.readOnly = false;
       });
-      let timer = setInterval(() => {
-        let currentValue = validValue - new Date().getTime();
-        let days = Math.floor(currentValue / (1000 * 60 * 60 * 24));
-        let hours = Math.floor((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let min = Math.floor((currentValue % (1000 * 60 * 60)) / (1000 * 60));
-        let sec = Math.floor((currentValue % (1000 * 60)) / 1000);
-        inputDays.current.value = days;
-        inputHours.current.value = hours;
-        inputMin.current.value = min;
-        inputSec.current.value = sec;
-        if (currentValue < 500) {
-          clearInterval(timer);
-          arr.map((el) => {
-            el.current.value = "";
-            el.current.readOnly = false;
-          });
-          setRun("Запустить таймер");
-          setCount({ days: 0, hours: 0, min: 0, sec: 0 });
-        }
-      }, 1000);
+      clearTimeout(timeout);
+      setRun("Запустить таймер");
+      setCount({ days: 0, hours: 0, min: 0, sec: 0 });
     }
   };
 
@@ -75,7 +77,12 @@ const Timer = () => {
 
   return (
     <>
-      <div className="btn" onClick={() => startTimer(count)}>
+      <div
+        className="btn"
+        onClick={() => {
+          startTimer();
+        }}
+      >
         {run}
       </div>
       {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
