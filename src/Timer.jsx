@@ -30,6 +30,7 @@ const Timer = () => {
     }
     if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
       setError("");
+      setEnableBtn(false);
       setRun("Таймер запущен");
       timer();
     }
@@ -40,7 +41,6 @@ const Timer = () => {
   let arr = [inputDays, inputHours, inputMin, inputSec];
 
   const timer = () => {
-    setEnableBtn(false);
     let curValue = validValue - new Date().getTime();
     console.log("currentValue: ", curValue);
     let days = Math.trunc(curValue / (1000 * 60 * 60 * 24));
@@ -55,19 +55,7 @@ const Timer = () => {
     localStorage.setItem("currentValue", curValue);
     setReadOnly(true);
     let timeout = setTimeout(timer, 1000);
-    console.log("dblyj");
-    if (stop === true) {
-      arr.map((el) => {
-        el.current.value = "";
-      });
-      clearTimeout(timeout);
-      localStorage.clear();
-      setEnableBtn(true);
-      setRun("Запустить таймер");
-      setReadOnly(false);
-      setCount({ days: 0, hours: 0, min: 0, sec: 0 });
-    }
-    if ((curValue < 500 && curValue > 0) || curValue < 0) {
+    if (stop || (curValue < 1000 && curValue > 0) || curValue < 0) {
       arr.map((el) => {
         el.current.value = "";
       });
@@ -122,14 +110,22 @@ const Timer = () => {
     if (count.hours > 24 || count.hours < 0) {
       return setError({ ...error, hours: true });
     }
+    if (count.days > 365 || count.days < 0) {
+      return setError({ ...error, days: true });
+    }
     setError({ days: false, hours: false, min: false, sec: false });
   };
 
+  const stopTimers = () => {
+    setStop(true);
+    return stop;
+  };
+
   useEffect(() => {
-    if (localStorage.getItem("currentValue") !== null && !stop) {
+    if (localStorage.getItem("currentValue") !== null) {
       contTimer();
     }
-  }, [stop]);
+  }, []);
 
   useEffect(() => {
     checkValue(count);
@@ -148,18 +144,12 @@ const Timer = () => {
   return (
     <>
       <div className="control-wrapper">
-        <button
-          disabled={!enableBtn}
-          className="btn"
-          onClick={() => {
-            startTimer();
-          }}
-        >
+        <button disabled={!enableBtn} className="btn" onClick={startTimer}>
           {run}
         </button>
-        <button className="btn" onClick={() => setStop(true)}>
+        {/* <button className="btn" onClick={stopTimers}>
           Стоп
-        </button>
+        </button> */}
         {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
       </div>
 
