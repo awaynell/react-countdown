@@ -8,6 +8,7 @@ const Timer = () => {
   const [errorShow, setErrorShow] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
   const [enableBtn, setEnableBtn] = useState(true);
+  const [start, setStart] = useState(false);
   const [stop, setStop] = useState(false);
   let [currentValue, setCurValue] = useState(0);
 
@@ -16,92 +17,100 @@ const Timer = () => {
   let inputMin = useRef(null);
   let inputSec = useRef(null);
 
-  const startTimer = () => {
-    if (
-      error.days === true ||
-      error.hours === true ||
-      error.min === true ||
-      error.sec === true ||
-      Object.values(count).reduce((acc, sum) => sum + acc) === 0
-    ) {
-      console.log("error: ", error);
-      setErrorShow(true);
-      return setError("Введите верные данные и нажмите повторно");
-    }
-    if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
-      setError("");
-      setRun("Таймер запущен");
-      timer(stop);
-    }
-  };
-
   let arr = [inputDays, inputHours, inputMin, inputSec];
 
-  let timer = (stop) => {
-    console.log("currentValue: ", currentValue);
-    let days = Math.trunc(currentValue / (1000 * 60 * 60 * 24));
-    let hours = Math.trunc((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let min = Math.trunc((currentValue % (1000 * 60 * 60)) / (1000 * 60));
-    let sec = Math.trunc((currentValue % (1000 * 60)) / 1000);
-    inputDays.current.value = days;
-    inputHours.current.value = hours;
-    inputMin.current.value = min;
-    inputSec.current.value = sec;
-    localStorage.setItem("currentValue", currentValue);
-    let stoping = stop;
-    setEnableBtn(false);
-    setReadOnly(true);
-    currentValue = currentValue - 1000;
-    setCurValue(currentValue);
-    let timeout = setTimeout(timer, 1000);
-    if (stoping || (currentValue < 1000 && currentValue > 0) || currentValue < 0) {
-      currentValue === 0;
-      clearTimeout(timeout);
-      console.log("timer work");
-      arr.map((el) => {
-        el.current.value = "";
-      });
-      localStorage.clear();
-      setEnableBtn(true);
-      setRun("Запустить таймер");
-      setReadOnly(false);
-      setCount({ days: 0, hours: 0, min: 0, sec: 0 });
-      setStop(false);
-    }
-  };
+  useEffect(() => {
+    let timeout;
+    const startTimer = () => {
+      if (
+        error.days === true ||
+        error.hours === true ||
+        error.min === true ||
+        error.sec === true ||
+        Object.values(count).reduce((acc, sum) => sum + acc) === 0
+      ) {
+        console.log("error: ", error);
+        setErrorShow(true);
+        return setError("Введите верные данные и нажмите повторно");
+      }
+      if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
+        setError("");
+        setRun("Таймер запущен");
+        setEnableBtn(false);
+        setReadOnly(true);
+        timer(stop);
+      }
+    };
 
-  const contTimer = () => {
-    let timeout = setTimeout(contTimer, 1000);
-    setEnableBtn(false);
-    setReadOnly(true);
-    setRun("Таймер запущен");
-    let afterUpdateVal = localStorage.getItem("currentValue");
-    console.log("afterUpdateVal: ", afterUpdateVal);
-    let days = Math.trunc(afterUpdateVal / (1000 * 60 * 60 * 24));
-    let hours = Math.trunc((afterUpdateVal % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let min = Math.trunc((afterUpdateVal % (1000 * 60 * 60)) / (1000 * 60));
-    let sec = Math.trunc((afterUpdateVal % (1000 * 60)) / 1000);
-    setCount({ days: days, hours: hours, min: min, sec: sec });
-    inputDays.current.value = days;
-    inputHours.current.value = hours;
-    inputMin.current.value = min;
-    inputSec.current.value = sec;
-    afterUpdateVal = afterUpdateVal - 1000;
-    localStorage.setItem("currentValue", afterUpdateVal);
-    if ((afterUpdateVal < 500 && afterUpdateVal > 0) || afterUpdateVal < 0) {
-      afterUpdateVal === 0;
-      console.log("conttimer work");
-      clearTimeout(timeout);
-      arr.map((el) => {
-        el.current.value = "";
-      });
-      localStorage.clear();
-      setEnableBtn(true);
-      setRun("Запустить таймер");
-      setReadOnly(false);
-      setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+    const timer = () => {
+      timeout = setTimeout(timer, 1000);
+      let days = Math.trunc(currentValue / (1000 * 60 * 60 * 24));
+      let hours = Math.trunc((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let min = Math.trunc((currentValue % (1000 * 60 * 60)) / (1000 * 60));
+      let sec = Math.trunc((currentValue % (1000 * 60)) / 1000);
+      inputDays.current.value = days;
+      inputHours.current.value = hours;
+      inputMin.current.value = min;
+      inputSec.current.value = sec;
+      localStorage.setItem("currentValue", currentValue);
+      currentValue = currentValue - 1000;
+      setCurValue(currentValue);
+      if ((currentValue < 1000 && currentValue > 0) || currentValue < 0 || stop) {
+        clearTimeout(timeout);
+        arr.map((el) => {
+          el.current.value = "";
+        });
+        localStorage.clear();
+        setEnableBtn(true);
+        setRun("Запустить таймер");
+        setReadOnly(false);
+        setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+        setStop(false);
+        return true;
+      }
+    };
+
+    const contTimer = () => {
+      timeout = setTimeout(contTimer, 1000);
+      setEnableBtn(false);
+      setReadOnly(true);
+      setRun("Таймер запущен");
+      let afterUpdateVal = localStorage.getItem("currentValue");
+      let days = Math.trunc(afterUpdateVal / (1000 * 60 * 60 * 24));
+      let hours = Math.trunc((afterUpdateVal % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      let min = Math.trunc((afterUpdateVal % (1000 * 60 * 60)) / (1000 * 60));
+      let sec = Math.trunc((afterUpdateVal % (1000 * 60)) / 1000);
+      setCount({ days: days, hours: hours, min: min, sec: sec });
+      inputDays.current.value = days;
+      inputHours.current.value = hours;
+      inputMin.current.value = min;
+      inputSec.current.value = sec;
+      afterUpdateVal = afterUpdateVal - 1000;
+      localStorage.setItem("currentValue", afterUpdateVal);
+      if ((afterUpdateVal < 500 && afterUpdateVal > 0) || afterUpdateVal < 0 || stop) {
+        clearTimeout(timeout);
+        arr.map((el) => {
+          el.current.value = "";
+        });
+        localStorage.clear();
+        setEnableBtn(true);
+        setRun("Запустить таймер");
+        setReadOnly(false);
+        setStart(false);
+        setStop(false);
+        setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+      }
+    };
+    if (localStorage.getItem("currentValue") !== null) {
+      contTimer();
     }
-  };
+    if (start) {
+      startTimer();
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [start, stop]);
 
   const checkValue = (count) => {
     setErrorShow(false);
@@ -121,12 +130,6 @@ const Timer = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("currentValue") !== null) {
-      contTimer();
-    }
-  }, []);
-
-  useEffect(() => {
     checkValue(count);
     if (readOnly) {
       arr.map((el) => {
@@ -138,33 +141,30 @@ const Timer = () => {
         el.current.readOnly = false;
       });
     }
+
     const validValue =
       new Date().getTime() + 1000 * 60 * 60 * 24 * count.days + 1000 * 60 * 60 * count.hours + 1000 * 60 * count.min + 1000 * count.sec;
-    console.log(validValue);
     setCurValue(validValue - new Date().getTime());
-    console.log(currentValue);
   }, [count, readOnly]);
-
-  // useEffect(() => {
-  //   if (!enableBtn) {
-  //     let timeout = setTimeout(timer, 1000);
-  //     if (stop === true) {
-  //       console.log("timer: ", timer);
-  //       clearTimeout(timeout);
-  //       arr.map((el) => {
-  //         el.current.value = "";
-  //       });
-  //     }
-  //   }
-  // }, [stop, enableBtn, currentValue]);
 
   return (
     <>
       <div className="control-wrapper">
-        <button disabled={!enableBtn} className="btn" onClick={startTimer}>
+        <button
+          disabled={!enableBtn}
+          className="btn"
+          onClick={() => {
+            setStart(true);
+          }}
+        >
           {run}
         </button>
-        <button className="btn" onClick={() => setStop(true)}>
+        <button
+          className="btn"
+          onClick={() => {
+            setStop(true);
+          }}
+        >
           Стоп
         </button>
         {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
@@ -179,7 +179,6 @@ const Timer = () => {
               placeholder="00"
               onChange={(e) => {
                 setCount({ ...count, days: e.target.value });
-                console.log(count);
               }}
               className={error.days ? "error" : null}
             />
