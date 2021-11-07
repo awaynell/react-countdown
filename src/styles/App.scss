@@ -1,8 +1,14 @@
 @import "./animation.scss";
+@import url("https://fonts.googleapis.com/css2?family=Karla&display=swap");
 
 * {
   margin: 0;
   padding: 0;
+}
+body {
+  background-color: #fa8bff;
+  background-image: linear-gradient(45deg, #fa8bff 0%, #2bd2ff 52%, #2bff88 90%);
+  font-family: "Karla", sans-serif;
 }
 .timer {
   height: 95vh;
@@ -10,7 +16,6 @@
   text-align: center;
   flex-direction: column;
   justify-content: center;
-  color: tomato;
   .wrapper {
     display: flex;
     text-align: center;
@@ -25,13 +30,12 @@
     }
     input {
       text-align: center;
-      color: tomato;
       border: none;
       outline: none;
       width: calc(100vw / 5);
       margin-right: 10px;
-      font-size: 100px;
-      border-radius: 10px;
+      font-size: 15vw;
+      border-radius: 10px 10px 0 0;
     }
   }
   fieldset {
@@ -39,42 +43,57 @@
   }
 
   span {
-    font-size: 25px;
+    font-size: 2vw;
+    background-color: rgba(255, 255, 255, 0.692);
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 0 0 10px 10px;
   }
 }
+
+.control-wrapper {
+  width: 98vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 button {
-  background-color: tomato;
   height: 30px;
   width: 300px;
-  margin: -20px -50px;
-  position: relative;
-  top: 50%;
-  left: 40%;
 }
 .btn {
-  color: white;
+  border: 1px solid white;
+  background-color: white;
+  color: rgb(0, 0, 0);
   margin-top: 10px;
   font-size: 20px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.77, 0, 0.175, 1);
-  &:hover {
-    background-color: white;
-    color: black;
-    transition: all 0.2s cubic-bezier(0.77, 0, 0.175, 1);
+  transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  &:hover:enabled {
+    background-color: transparent;
+    color: white;
+    transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
   }
-  &: disabled;
-}
-.btn .disabled {
-  opacity: 0.5;
-  &:hover {
+  &:disabled {
+    opacity: 0.5;
   }
 }
+
 .sec,
 .min,
 .hours,
 .days {
   display: flex;
   flex-direction: column;
+}
+
+input {
+  color: rgba(255, 255, 255, 0.685);
+  background-color: transparent;
+  box-shadow: 2px 5px 100px 1px rgba(34, 60, 80, 0.19);
+  transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
 }
 .sec {
   .over {
