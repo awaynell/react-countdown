@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ErrorWindow from "./components/ErrorWindow";
 
 const Timer = () => {
@@ -9,7 +9,7 @@ const Timer = () => {
   const [readOnly, setReadOnly] = useState(false);
   const [enableBtn, setEnableBtn] = useState(true);
   const [stop, setStop] = useState(false);
-  const [currentValue, setCurValue] = useState(0);
+  let [currentValue, setCurValue] = useState(0);
 
   let inputDays = useRef(null);
   let inputHours = useRef(null);
@@ -30,47 +30,50 @@ const Timer = () => {
     }
     if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
       setError("");
-      setEnableBtn(false);
       setRun("Таймер запущен");
-      timer();
+      timer(stop);
     }
   };
 
-  const validValue =
-    new Date().getTime() + 1000 * 60 * 60 * 24 * count.days + 1000 * 60 * 60 * count.hours + 1000 * 60 * count.min + 1000 * count.sec;
   let arr = [inputDays, inputHours, inputMin, inputSec];
 
-  const timer = () => {
-    let curValue = validValue - new Date().getTime();
-    console.log("currentValue: ", curValue);
-    let days = Math.trunc(curValue / (1000 * 60 * 60 * 24));
-    let hours = Math.trunc((curValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let min = Math.trunc((curValue % (1000 * 60 * 60)) / (1000 * 60));
-    let sec = Math.trunc((curValue % (1000 * 60)) / 1000);
+  let timer = (stop) => {
+    console.log("currentValue: ", currentValue);
+    let days = Math.trunc(currentValue / (1000 * 60 * 60 * 24));
+    let hours = Math.trunc((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let min = Math.trunc((currentValue % (1000 * 60 * 60)) / (1000 * 60));
+    let sec = Math.trunc((currentValue % (1000 * 60)) / 1000);
     inputDays.current.value = days;
     inputHours.current.value = hours;
     inputMin.current.value = min;
     inputSec.current.value = sec;
-    setCurValue(curValue);
-    localStorage.setItem("currentValue", curValue);
+    localStorage.setItem("currentValue", currentValue);
+    let stoping = stop;
+    setEnableBtn(false);
     setReadOnly(true);
+    currentValue = currentValue - 1000;
+    setCurValue(currentValue);
     let timeout = setTimeout(timer, 1000);
-    if (stop || (curValue < 1000 && curValue > 0) || curValue < 0) {
+    if (stoping || (currentValue < 1000 && currentValue > 0) || currentValue < 0) {
+      currentValue === 0;
+      clearTimeout(timeout);
+      console.log("timer work");
       arr.map((el) => {
         el.current.value = "";
       });
-      clearTimeout(timeout);
       localStorage.clear();
       setEnableBtn(true);
       setRun("Запустить таймер");
       setReadOnly(false);
       setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+      setStop(false);
     }
   };
 
   const contTimer = () => {
     let timeout = setTimeout(contTimer, 1000);
     setEnableBtn(false);
+    setReadOnly(true);
     setRun("Таймер запущен");
     let afterUpdateVal = localStorage.getItem("currentValue");
     console.log("afterUpdateVal: ", afterUpdateVal);
@@ -84,9 +87,10 @@ const Timer = () => {
     inputMin.current.value = min;
     inputSec.current.value = sec;
     afterUpdateVal = afterUpdateVal - 1000;
-    console.log("afterUpdateVal: ", afterUpdateVal);
     localStorage.setItem("currentValue", afterUpdateVal);
     if ((afterUpdateVal < 500 && afterUpdateVal > 0) || afterUpdateVal < 0) {
+      afterUpdateVal === 0;
+      console.log("conttimer work");
       clearTimeout(timeout);
       arr.map((el) => {
         el.current.value = "";
@@ -116,11 +120,6 @@ const Timer = () => {
     setError({ days: false, hours: false, min: false, sec: false });
   };
 
-  const stopTimers = () => {
-    setStop(true);
-    return stop;
-  };
-
   useEffect(() => {
     if (localStorage.getItem("currentValue") !== null) {
       contTimer();
@@ -139,7 +138,25 @@ const Timer = () => {
         el.current.readOnly = false;
       });
     }
+    const validValue =
+      new Date().getTime() + 1000 * 60 * 60 * 24 * count.days + 1000 * 60 * 60 * count.hours + 1000 * 60 * count.min + 1000 * count.sec;
+    console.log(validValue);
+    setCurValue(validValue - new Date().getTime());
+    console.log(currentValue);
   }, [count, readOnly]);
+
+  // useEffect(() => {
+  //   if (!enableBtn) {
+  //     let timeout = setTimeout(timer, 1000);
+  //     if (stop === true) {
+  //       console.log("timer: ", timer);
+  //       clearTimeout(timeout);
+  //       arr.map((el) => {
+  //         el.current.value = "";
+  //       });
+  //     }
+  //   }
+  // }, [stop, enableBtn, currentValue]);
 
   return (
     <>
@@ -147,9 +164,9 @@ const Timer = () => {
         <button disabled={!enableBtn} className="btn" onClick={startTimer}>
           {run}
         </button>
-        {/* <button className="btn" onClick={stopTimers}>
+        <button className="btn" onClick={() => setStop(true)}>
           Стоп
-        </button> */}
+        </button>
         {errorShow ? <ErrorWindow style={{ textAlign: "center", marginTop: "20px", color: "tomato" }} error={error} /> : null}
       </div>
 
