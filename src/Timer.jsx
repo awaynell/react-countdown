@@ -108,7 +108,7 @@ const Timer = () => {
   }, [start, stop]);
 
   useEffect(() => {
-    checkValue(count, error, setErrorShow, setError);
+    checkValue(count, error, setStart, setErrorShow, setError);
     if (readOnly) {
       arr.map((el) => {
         el.current.readOnly = true;

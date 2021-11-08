@@ -1,4 +1,4 @@
-export const checkValue = (count, error, setErrorShow, setError) => {
+export const checkValue = (count, error, setStart, setErrorShow, setError) => {
   setErrorShow(false);
   if (count.sec > 59 || count.sec < 0) {
     return setError({ ...error, sec: true });
@@ -12,5 +12,6 @@ export const checkValue = (count, error, setErrorShow, setError) => {
   if (count.days > 365 || count.days < 0) {
     return setError({ ...error, days: true });
   }
+  setStart(false);
   setError({ days: false, hours: false, min: false, sec: false });
 };
