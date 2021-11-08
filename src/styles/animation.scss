@@ -1,13 +1,33 @@
 @keyframes blinking {
   0% {
-    background-color: rgba(255, 0, 0, 0.123);
     opacity: 0.6;
   }
   50% {
-    background-color: rgba(255, 0, 0, 0.103);
     opacity: 0;
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes tremor {
+  0%,
+  20%,
+  40%,
+  60%,
+  80%,
+  100% {
+    left: -1px;
+    -webkit-transform: translateX(-4%);
+    transform: translateX(-4%);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    left: 1px;
+    -webkit-transform: translateX(4%);
+    transform: translateX(4%);
   }
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ErrorWindow from "./components/ErrorWindow";
+import { checkValue } from "./functions/checkValue";
 
 const Timer = () => {
   const [count, setCount] = useState({ days: 0, hours: 0, min: 0, sec: 0 });
@@ -21,7 +22,8 @@ const Timer = () => {
 
   useEffect(() => {
     let timeout;
-    const startTimer = () => {
+
+    const timer = () => {
       if (
         error.days === true ||
         error.hours === true ||
@@ -33,17 +35,10 @@ const Timer = () => {
         setErrorShow(true);
         return setError("Введите верные данные и нажмите повторно");
       }
-      if (Object.values(count).reduce((acc, sum) => sum + acc) > 0) {
-        setError("");
-        setRun("Таймер запущен");
-        setEnableBtn(false);
-        setReadOnly(true);
-        timer(stop);
-      }
-    };
-
-    const timer = () => {
-      timeout = setTimeout(timer, 1000);
+      setError({ days: false, hours: false, min: false, sec: false });
+      setRun("Таймер запущен");
+      setEnableBtn(false);
+      setReadOnly(true);
       let days = Math.trunc(currentValue / (1000 * 60 * 60 * 24));
       let hours = Math.trunc((currentValue % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       let min = Math.trunc((currentValue % (1000 * 60 * 60)) / (1000 * 60));
@@ -55,18 +50,13 @@ const Timer = () => {
       localStorage.setItem("currentValue", currentValue);
       currentValue = currentValue - 1000;
       setCurValue(currentValue);
+      timeout = setTimeout(timer, 1000);
       if ((currentValue < 1000 && currentValue > 0) || currentValue < 0 || stop) {
         clearTimeout(timeout);
         arr.map((el) => {
           el.current.value = "";
         });
-        localStorage.clear();
-        setEnableBtn(true);
-        setRun("Запустить таймер");
-        setReadOnly(false);
-        setCount({ days: 0, hours: 0, min: 0, sec: 0 });
-        setStop(false);
-        return true;
+        stopTimer();
       }
     };
 
@@ -89,48 +79,36 @@ const Timer = () => {
       localStorage.setItem("currentValue", afterUpdateVal);
       if ((afterUpdateVal < 500 && afterUpdateVal > 0) || afterUpdateVal < 0 || stop) {
         clearTimeout(timeout);
-        arr.map((el) => {
-          el.current.value = "";
-        });
-        localStorage.clear();
-        setEnableBtn(true);
-        setRun("Запустить таймер");
-        setReadOnly(false);
-        setStart(false);
-        setStop(false);
-        setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+        stopTimer();
       }
     };
+
+    const stopTimer = () => {
+      arr.map((el) => {
+        el.current.value = "";
+      });
+      localStorage.clear();
+      setEnableBtn(true);
+      setRun("Запустить таймер");
+      setReadOnly(false);
+      setStart(false);
+      setStop(false);
+      setCount({ days: 0, hours: 0, min: 0, sec: 0 });
+    };
+
     if (localStorage.getItem("currentValue") !== null) {
       contTimer();
     }
     if (start) {
-      startTimer();
+      timer();
     }
     return () => {
       clearTimeout(timeout);
     };
   }, [start, stop]);
 
-  const checkValue = (count) => {
-    setErrorShow(false);
-    if (count.sec > 59 || count.sec < 0) {
-      return setError({ ...error, sec: true });
-    }
-    if (count.min > 59 || count.min < 0) {
-      return setError({ ...error, min: true });
-    }
-    if (count.hours > 24 || count.hours < 0) {
-      return setError({ ...error, hours: true });
-    }
-    if (count.days > 365 || count.days < 0) {
-      return setError({ ...error, days: true });
-    }
-    setError({ days: false, hours: false, min: false, sec: false });
-  };
-
   useEffect(() => {
-    checkValue(count);
+    checkValue(count, error, setErrorShow, setError);
     if (readOnly) {
       arr.map((el) => {
         el.current.readOnly = true;
@@ -183,6 +161,7 @@ const Timer = () => {
               className={error.days ? "error" : null}
             />
             <span>Days</span>
+            {error.days ? <ErrorWindow error={"Промежуток 0 - 365"} /> : null}
           </div>
           <div className="hours">
             <input
@@ -194,8 +173,8 @@ const Timer = () => {
               }}
               className={error.hours ? "error" : null}
             />
-            {error.hours ? <ErrorWindow error={"Промежуток 0 - 24"} /> : null}
             <span>Hours</span>
+            {error.hours ? <ErrorWindow error={"Промежуток 0 - 24"} /> : null}
           </div>
           <div className="min">
             <input
@@ -207,8 +186,8 @@ const Timer = () => {
               }}
               className={error.min ? "error" : null}
             />
-            {error.min ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
             <span>Minutes</span>
+            {error.min ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
           </div>
           <div className="sec">
             <input
@@ -220,8 +199,8 @@ const Timer = () => {
               }}
               className={error.sec ? "error" : null}
             />
-            {error.sec ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
             <span>Seconds</span>
+            {error.sec ? <ErrorWindow error={"Промежуток 0 - 59"} /> : null}
           </div>
         </div>
       </div>

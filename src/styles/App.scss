@@ -8,13 +8,12 @@
 body {
   background-image: linear-gradient(45deg, #fa8bff 0%, #2bd2ff 52%, #2bff88 90%);
   font-family: "Karla", sans-serif;
+  height: 100vh;
 }
 .timer {
-  height: 95vh;
   display: flex;
   text-align: center;
   flex-direction: column;
-  justify-content: center;
   .wrapper {
     display: flex;
     text-align: center;
@@ -51,16 +50,20 @@ body {
 }
 
 .control-wrapper {
-  width: 98vw;
+  margin-top: 150px;
+  margin: 0 auto;
+  width: 50vw;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
+  margin-bottom: 200px;
 }
 
 button {
-  height: 30px;
-  width: 300px;
+  height: 100px;
+  width: 150px;
+  margin-right: 10px;
 }
 .btn {
   border: 1px solid white;
@@ -100,5 +103,11 @@ input {
   }
 }
 .error {
-  animation: blinking 3s;
+  animation: tremor 0.5s;
+}
+.errorInfo {
+  flex-wrap: wrap;
+  flex: 0 1 auto;
+  margin-top: 10px;
+  animation: blinking 1s;
 }
