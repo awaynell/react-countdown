@@ -13,5 +13,5 @@
 <img alt='Превью' src="https://github.com/awaynell/react-countdown/blob/master/docs/timer_preview.png">
 </p>
 
-- `npm start` — This will spawn a development server with a default port of `3000`.
-- `npm run build` — This will output a production build in the `dist` directory.
+- `npm start` — Запустить сервер разработки localhost:3000 с hot-reloading..
+- `npm run build` — Собрать приложение webpack'ом и минифицировать JS & CSS (для продакшн-версии).
