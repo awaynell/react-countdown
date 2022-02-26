@@ -1,4 +1,4 @@
-# Simple React Countdown
+<p align="center"># Simple React Countdown</p>
 
 ### Таймер продолжает свою работу даже после обновления страницы
 
